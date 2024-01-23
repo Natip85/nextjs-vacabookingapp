@@ -33,6 +33,7 @@ const HotelDetailsClient = ({
       <div className="aspect-square overflow-hidden relative w-full h-[200px] bg-red-500 md:h-[400px] rounded-lg">
         <Image
           fill
+          sizes={"30"}
           src={hotel.image}
           alt={hotel.title}
           className="object-cover"

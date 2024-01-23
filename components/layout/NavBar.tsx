@@ -20,7 +20,13 @@ const NavBar = () => {
             className="flex items-center gap-1 cursor-pointer"
             onClick={() => router.push("/")}
           >
-            <Image src={"/bedIcon.webp"} alt="logo" width="30" height="30" />
+            <Image
+              src={"/bedIcon.webp"}
+              alt="logo"
+              width="30"
+              height="30"
+              className="aspect-square"
+            />
             <div className="font-bold text-xl">Booking.com</div>
           </div>
           <SearchInput />

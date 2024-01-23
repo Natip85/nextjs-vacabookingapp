@@ -393,6 +393,7 @@ const AddRoomForm = ({ hotel, room, handleDialogOpen }: AddRoomFormProps) => {
                       <div className="relative max-w-[400px] min-w-[200px] max-h-[400px] min-h-[200px] mt-4">
                         <Image
                           fill
+                          sizes="30"
                           src={image}
                           alt="Room image"
                           className="object-contain"

@@ -29,6 +29,7 @@ const HotelCard = ({ hotel }: { hotel: HotelWithRooms }) => {
         <div className="flex-1 aspect-square overflow-hidden relative w-full h-[210px] rounded-s-lg">
           <Image
             fill
+            sizes={"30"}
             src={hotel.image}
             alt={hotel.title}
             className="w-full h-full object-cover"
