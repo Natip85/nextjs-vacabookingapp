@@ -44,12 +44,10 @@ export async function POST(req: Request) {
       automatic_payment_methods: { enabled: true },
     });
     bookingData.paymentIntentId = paymentIntent.id;
-    console.log("Booking data>>>", bookingData);
     await prismadb.booking.create({
       data: bookingData,
     });
-    console.log("Payment Intent data>>>", paymentIntent);
-    return NextResponse.json(paymentIntent);
+    return NextResponse.json({ paymentIntent });
   }
 
   return new NextResponse("Internal server error", { status: 500 });
