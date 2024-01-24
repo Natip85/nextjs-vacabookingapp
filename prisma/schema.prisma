@@ -69,20 +69,21 @@ model Room{
 model Booking {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   userName String
-  userId String @db.ObjectId
-  hotelId String @db.ObjectId 
-  roomId String @db.ObjectId
-  hotelOwnerId String @db.ObjectId
+  userEmail String
+  userId String 
+  hotelId String 
+  roomId String 
+  hotelOwnerId String 
   startDate DateTime
   endDate DateTime
-  breakfastIncluded Boolean
+  breakFastIncluded Boolean
   currency String
   totalPrice Int
   paymentStatus Boolean @default(false)
   paymentIntentId String @unique
   bookedAt DateTime @default(now())
 
-  Hotel Hotel @relation(fields: [hotelId], references: [id]) 
-  Room Room @relation(fields: [roomId], references: [id]) 
+  Hotel Hotel? @relation(fields: [hotelId], references: [id]) 
+  Room Room? @relation(fields: [roomId], references: [id]) 
 
 }

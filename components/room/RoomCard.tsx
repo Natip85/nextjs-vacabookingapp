@@ -21,7 +21,6 @@ import {
   Loader2,
   MountainSnow,
   Pencil,
-  Plus,
   Ship,
   Trash,
   Trees,
@@ -29,6 +28,7 @@ import {
   Users,
   UtensilsCrossed,
   VolumeX,
+  Wand2,
   Wifi,
 } from "lucide-react";
 import { Separator } from "../ui/separator";
@@ -50,6 +50,8 @@ import { DatePickerWithRange } from "./DateRangePicker";
 import { DateRange } from "react-day-picker";
 import { differenceInCalendarDays } from "date-fns";
 import { Checkbox } from "../ui/checkbox";
+import { useAuth } from "@clerk/nextjs";
+import useBookRoom from "@/hooks/useBookRoom";
 
 interface RoomCarProps {
   hotel?: Hotel & {
@@ -59,10 +61,14 @@ interface RoomCarProps {
   bookings?: Booking[];
 }
 const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
+  const { userId } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
+  const { setRoomData, paymentIntentId, setClientSecret, setPaymentIntentId } =
+    useBookRoom();
   const [isLoading, setIsLoading] = useState(false);
+  const [bookingIsLoading, setBookingIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<DateRange | undefined>();
   const [totalPrice, setTotalPrice] = useState(room.roomPrice);
@@ -125,11 +131,80 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
         });
       });
   };
+
+  const handleBookRoom = () => {
+    if (!userId)
+      return toast({
+        variant: "destructive",
+        description: "Oops! Make sure you are logged in",
+      });
+
+    if (!hotel?.userId)
+      return toast({
+        variant: "destructive",
+        description: "Something went wrong, try to refresh the page",
+      });
+    if (date?.from && date?.to) {
+      setBookingIsLoading(true);
+      const bookingRoomData = {
+        room,
+        totalPrice,
+        breakFastIncluded: includeBreakFast,
+        startDate: date.from,
+        endDate: date.to,
+      };
+
+      setRoomData(bookingRoomData);
+
+      fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          booking: {
+            hotelOwnerId: hotel.userId,
+            hotelId: hotel.id,
+            roomId: room.id,
+            startDate: date.from,
+            endDate: date.to,
+            breakFastIncluded: includeBreakFast,
+            totalPrice: totalPrice,
+          },
+          payment_intent_id: paymentIntentId,
+        }),
+      })
+        .then((res) => {
+          setBookingIsLoading(false);
+          if (res.status === 401) {
+            return router.push("/login");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setClientSecret(data.paymentIntent.client_secret);
+          setPaymentIntentId(data.paymentIntent.id);
+          router.push("/book-room");
+        })
+        .catch((error) => {
+          console.log("Error", error);
+          toast({
+            variant: "destructive",
+            description: `ERROR! ${error.message}`,
+          });
+        });
+    } else {
+      toast({
+        variant: "destructive",
+        description: "Oops! Select a date",
+      });
+    }
+  };
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{room.title}</CardTitle>
-        <CardDescription>{room.description}</CardDescription>
+        <CardTitle className="mb-2">{room.title}</CardTitle>
+        <CardDescription>
+          {room.description.substring(0, 500)}...
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="aspect-square overflow-hidden relative h-[200px] rounded-lg">
@@ -228,7 +303,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
           )}
         </div>
         <Separator />
-        <div className="flex gap-4 justify-between">
+        <div className="flex gap-4 justify-between px-3">
           <div>
             Room price: <span className="font-bold">${room.roomPrice}</span>
             <span className="text-xs">/24hrs</span>
@@ -266,6 +341,21 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
                 Total Price: <span className="font-bold">${totalPrice}</span>{" "}
                 for <span className="font-bold">{days} Days</span>
               </div>
+              <Button
+                onClick={() => handleBookRoom()}
+                disabled={bookingIsLoading}
+                type="button"
+              >
+                {bookingIsLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4" /> Loading...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="mr-2 h-4 w-4" /> Book Room
+                  </>
+                )}
+              </Button>
             </div>
           ) : (
             <div className="flex w-full justify-between">
