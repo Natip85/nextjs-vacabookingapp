@@ -34,7 +34,7 @@ import {
 import { Separator } from "../ui/separator";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -48,7 +48,7 @@ import axios from "axios";
 import { useToast } from "../ui/use-toast";
 import { DatePickerWithRange } from "./DateRangePicker";
 import { DateRange } from "react-day-picker";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { Checkbox } from "../ui/checkbox";
 import { useAuth } from "@clerk/nextjs";
 import useBookRoom from "@/hooks/useBookRoom";
@@ -94,6 +94,21 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
       }
     }
   }, [date, room.roomPrice, includeBreakFast]);
+
+  const disabledDates = useMemo(() => {
+    let dates: Date[] = [];
+    const roomBookings = bookings.filter(
+      (booking) => booking.roomId === room.id
+    );
+    roomBookings.forEach((booking) => {
+      const range = eachDayOfInterval({
+        start: new Date(booking.startDate),
+        end: new Date(booking.endDate),
+      });
+      dates = [...dates, ...range];
+    });
+    return dates;
+  }, [bookings]);
 
   const handleDialogOpen = () => {
     setOpen((prev) => !prev);
@@ -321,7 +336,11 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
             <div className="flex flex-col gap-6">
               <div>
                 <div className="mb-2">Select date range for this room</div>
-                <DatePickerWithRange date={date} setDate={setDate} />
+                <DatePickerWithRange
+                  date={date}
+                  setDate={setDate}
+                  disabledDates={disabledDates}
+                />
               </div>
               {room.breakfastPrice > 0 && (
                 <div>
