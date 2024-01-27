@@ -76,6 +76,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
   const [days, setDays] = useState(1);
 
   const isHotelDetailsPage = pathname.includes("hotel-details");
+  const isBookRoom = pathname.includes("book-room");
 
   useEffect(() => {
     if (date && date.from && date.to) {
@@ -98,7 +99,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
     const roomBookings = bookings.filter(
-      (booking) => booking.roomId === room.id
+      (booking) => booking.roomId === room.id && booking.paymentStatus
     );
     roomBookings.forEach((booking) => {
       const range = eachDayOfInterval({
@@ -331,6 +332,8 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
           )}
         </div>
         <Separator />
+      </CardContent>
+      {!isBookRoom && (
         <CardFooter>
           {isHotelDetailsPage ? (
             <div className="flex flex-col gap-6">
@@ -422,7 +425,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCarProps) => {
             </div>
           )}
         </CardFooter>
-      </CardContent>
+      )}
     </Card>
   );
 };
