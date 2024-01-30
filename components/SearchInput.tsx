@@ -11,9 +11,11 @@ const SearchInput = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const title = searchParams.get("title");
+
   const [value, setValue] = useState(title || "");
 
   const debouncedValue = useDebouncedValue<string>(value);
+
   useEffect(() => {
     const query = {
       title: debouncedValue,

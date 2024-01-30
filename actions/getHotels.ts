@@ -8,10 +8,12 @@ export const getHotels = async (searchParams: {
 }) => {
   try {
     const { title, country, state, city } = searchParams;
+    const titleLowerCase = title ? title.toLowerCase() : "";
     const hotels = await prismadb.hotel.findMany({
       where: {
         title: {
           contains: title,
+          mode: "insensitive",
         },
         country,
         state,

@@ -14,7 +14,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const hotels = await getHotels(searchParams);
   if (!hotels) return <div>No hotels found...</div>;
   return (
-    <div className="">
+    <div>
       <HotelList hotels={hotels} />
     </div>
   );
