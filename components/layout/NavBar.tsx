@@ -30,14 +30,14 @@ const NavBar = () => {
             <div className="font-bold text-xl">Booking</div>
           </div>
           <SearchInput />
-          <div className="flex gap-3 items-center">
-            <div className="flex">
+          <div className="flex gap-1 items-center">
+            <div className="flex ">
               <ModeToggle />
               <NavMenu />
             </div>
             <UserButton afterSignOutUrl="/" />
             {!userId && (
-              <>
+              <div className="flex gap-2">
                 <Button
                   onClick={() => router.push("/sign-in")}
                   variant={"outline"}
@@ -48,7 +48,7 @@ const NavBar = () => {
                 <Button onClick={() => router.push("/sign-up")} size={"sm"}>
                   Sign up
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </div>
