@@ -31,7 +31,7 @@ const NavBar = () => {
           </div>
           <SearchInput />
           <div className="flex gap-3 items-center">
-            <div>
+            <div className="flex">
               <ModeToggle />
               <NavMenu />
             </div>
