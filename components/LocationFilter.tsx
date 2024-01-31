@@ -10,11 +10,12 @@ import {
 } from "./ui/select";
 import useLocation from "@/hooks/useLocation";
 import { ICity, IState } from "country-state-city";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import qs from "query-string";
 import { Button } from "./ui/button";
 const LocationFilter = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const params = useSearchParams();
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
@@ -79,6 +80,7 @@ const LocationFilter = () => {
     setState("");
     setCity("");
   };
+  if (pathname !== "/") return null;
   return (
     <Container>
       <div className="flex gap-2 md:gap-4 items-center justify-center text-sm">
