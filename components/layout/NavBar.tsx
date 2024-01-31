@@ -27,7 +27,7 @@ const NavBar = () => {
               height="30"
               className="aspect-square"
             />
-            <div className="font-bold text-xl">Booking.com</div>
+            <div className="font-bold text-xl">Booking</div>
           </div>
           <SearchInput />
           <div className="flex gap-3 items-center">
